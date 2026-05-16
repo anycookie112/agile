@@ -26,3 +26,18 @@ jobs:
 
       - name: Run automated tests
         run: pytest
+
+      - name: Run duplicate removal on data
+        run: python src/remove_duplicates.py
+
+      - name: Verify no duplicates in processed data
+        run: |
+          python -c "
+          import pandas as pd
+          df = pd.read_csv('data/processed_dataset.csv')
+          duplicate_count = df.duplicated().sum()
+          print(f'Duplicate rows found: {duplicate_count}')
+          if duplicate_count > 0:
+            raise ValueError(f'ERROR: {duplicate_count} duplicate rows found in processed data!')
+          print('SUCCESS: No duplicates in processed dataset')
+          "
